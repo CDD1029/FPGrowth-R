@@ -1,0 +1,11 @@
+boolVec <- function(transactionData) {
+  boolVector = transactionData@data[1:(nrow(transactionData)*ncol(transactionData))]
+  return (boolVector)
+}
+dataFreq <- function(transactionData) {
+  freq = itemFrequency(transactionData,"absolute")
+  numItems = ncol(t(freq)) # not sure why ncol, but that's what worked
+  freqWithAlpaOrdering = cbind(freq,0:(numItems-1))
+  orderedfreqWithAlpaOrderingreq = freqWithAlpaOrdering[order(freqWithAlpaOrdering[,1],freqWithAlpaOrdering[,2],decreasing=TRUE),]
+  return(orderedfreqWithAlpaOrderingreq)
+}
