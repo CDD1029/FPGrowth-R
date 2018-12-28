@@ -17,17 +17,26 @@ using namespace Rcpp;
 //
 
 // [[Rcpp::export]]
-double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTransData,CharacterVector rItems) {
+double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTransData,CharacterVector rItems, int minSupport) {
   int freq[2][rNumItems];
   int placeHolder = 0;
+  /*
   for(int col1 = 0; col1 < 2; col1++){
+    
     for(int col2 = 0; col2 < rNumItems; col2++){
       freq[col1][col2] = rFreq[placeHolder++];
       Rcout << freq[col1][col2] << " ";
     }
     Rcout << "" << std::endl;
+  }*/
+  //The code before does the same as the following, but this is faster, i suppose. 
+  bool itemIsAboveMinSupport[rNumItems]; // other ideas could be to have a cutoff, but this is safer as it does not assume the frequency is ordered. 
+  for(int i = 0; i < rNumItems; i++){
+    freq[0][i] = rFreq[i];
+    freq[1][i] = rFreq[i+rNumItems];
+    itemIsAboveMinSupport[i] = rFreq[i] > minSupport;
   }
-  
+
   bool transData[rNumTrans][rNumItems]; // transid | itemNumber
   placeHolder = 0;
   
@@ -90,5 +99,5 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
 //
 
 /*** R
-a = uhh(dataFreq(data),ncol(data),nrow(data),boolVec(data),data@itemInfo$labels)
+a = uhh(dataFreq(data),ncol(data),nrow(data),boolVec(data),data@itemInfo$labels,15000)
 */
