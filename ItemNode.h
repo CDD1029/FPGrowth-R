@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+
 class ItemNode {
 private:
   std::vector<bool> boolNextItem;

@@ -31,10 +31,19 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
   }*/
   //The code before does the same as the following, but this is faster, i suppose. 
   bool itemIsAboveMinSupport[rNumItems]; // other ideas could be to have a cutoff, but this is safer as it does not assume the frequency is ordered. 
+  //another assumption is that each item is unique
+  int lastItemIsAboveMinSupport = -1;
+  int totalItemsAboveMinSupport = 0;
   for(int i = 0; i < rNumItems; i++){
     freq[0][i] = rFreq[i];
     freq[1][i] = rFreq[i+rNumItems];
     itemIsAboveMinSupport[i] = rFreq[i] > minSupport;
+    //can add a simple if next item is > prev, its not ordered here
+    if (rFreq[i] > minSupport) {
+      lastItemIsAboveMinSupport = i;
+      totalItemsAboveMinSupport++;
+      //this might be redundant, if ordered these values should be equal
+    }
   }
 
   bool transData[rNumTrans][rNumItems]; // transid | itemNumber
@@ -55,6 +64,10 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
   
   ItemNode root(rNumItems,-1);
   std::vector<ItemNode> allNodes;
+//  std::vector<ConditionalTree> trees;
+  for(int i = 0; i < totalItemsAboveMinSupport;i++){
+  //  trees[i].add(root);
+  }
   allNodes.push_back(root);
   for(int transID = 0; transID < rNumTrans; transID++){
     int lastNodeLocation = 0;
