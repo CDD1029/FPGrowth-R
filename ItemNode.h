@@ -1,3 +1,5 @@
+#ifndef ITEMNODE
+#define ITEMNODE
 #include <vector>
 #include <iostream>
 
@@ -33,3 +35,4 @@ public:
     
   }
 };
+#endif

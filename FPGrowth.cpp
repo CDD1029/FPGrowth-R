@@ -3,7 +3,7 @@
 #include <vector>
 #include "ItemNode.h"
 #include "RuleNode.h"
-
+#include "ConditionalTree.h"
 using namespace Rcpp;
 
 // This is a simple example of exporting a C++ function to R. You can
@@ -20,7 +20,7 @@ using namespace Rcpp;
 double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTransData,CharacterVector rItems, int minSupport) {
   int freq[2][rNumItems];
   int placeHolder = 0;
-  /*
+  
   for(int col1 = 0; col1 < 2; col1++){
     
     for(int col2 = 0; col2 < rNumItems; col2++){
@@ -28,7 +28,7 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
       Rcout << freq[col1][col2] << " ";
     }
     Rcout << "" << std::endl;
-  }*/
+  }
   //The code before does the same as the following, but this is faster, i suppose. 
   bool itemIsAboveMinSupport[rNumItems]; // other ideas could be to have a cutoff, but this is safer as it does not assume the frequency is ordered. 
   //another assumption is that each item is unique
@@ -45,7 +45,9 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
       //this might be redundant, if ordered these values should be equal
     }
   }
-
+  for(int i = totalItemsAboveMinSupport-1; i >= 0; i--){
+    Rcout << freq[1][i] << std::endl;
+  }
   bool transData[rNumTrans][rNumItems]; // transid | itemNumber
   placeHolder = 0;
   
@@ -64,10 +66,19 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
   
   ItemNode root(rNumItems,-1);
   std::vector<ItemNode> allNodes;
-//  std::vector<ConditionalTree> trees;
-  for(int i = 0; i < totalItemsAboveMinSupport;i++){
-  //  trees[i].add(root);
+  std::vector<ConditionalTree> trees;
+  ConditionalTree emptyTree(0);
+  
+  for(int i = 0; i < totalItemsAboveMinSupport; i++){
+    trees.push_back(emptyTree);
+    trees.at(i).add(i);
   }
+  Rcout << "endl" << std::endl;
+  
+  for(int i = 0; i < totalItemsAboveMinSupport; i++){
+    Rcout << trees.at(i).sub() << std::endl;
+  }
+  Rcout << "endl" << std::endl;
   allNodes.push_back(root);
   for(int transID = 0; transID < rNumTrans; transID++){
     int lastNodeLocation = 0;
