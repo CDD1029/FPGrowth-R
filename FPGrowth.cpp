@@ -67,11 +67,10 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
   ItemNode root(rNumItems,-1);
   std::vector<ItemNode> allNodes;
   std::vector<ConditionalTree> trees;
-  ConditionalTree emptyTree(0);
+  ConditionalTree emptyTree(root);
   
   for(int i = 0; i < totalItemsAboveMinSupport; i++){
     trees.push_back(emptyTree);
-    trees.at(i).add(i);
   }
 
   allNodes.push_back(root);
