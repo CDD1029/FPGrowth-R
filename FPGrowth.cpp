@@ -73,12 +73,7 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
     trees.push_back(emptyTree);
     trees.at(i).add(i);
   }
-  Rcout << "endl" << std::endl;
-  
-  for(int i = 0; i < totalItemsAboveMinSupport; i++){
-    Rcout << trees.at(i).sub() << std::endl;
-  }
-  Rcout << "endl" << std::endl;
+
   allNodes.push_back(root);
   for(int transID = 0; transID < rNumTrans; transID++){
     int lastNodeLocation = 0;
