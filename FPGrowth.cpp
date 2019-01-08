@@ -17,6 +17,7 @@ using namespace Rcpp;
 //
 
 // [[Rcpp::export]]
+
 double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTransData,CharacterVector rItems, int minSupport) {
   int freq[2][rNumItems];
   int placeHolder = 0;
@@ -48,9 +49,8 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
   for(int i = totalItemsAboveMinSupport-1; i >= 0; i--){
     Rcout << freq[1][i] << std::endl;
   }
-  bool transData[rNumTrans][rNumItems]; // transid | itemNumber
+  bool transData[rNumTrans][rNumItems]; // transid | itemNumber // idea: make it 2 vectors and consolidate finding correct index. 
   placeHolder = 0;
-  
   for(int col1 = 0; col1 < rNumTrans; col1++){
     for(int col2 = 0; col2 < rNumItems; col2++){
       transData[col1][col2] = rTransData[placeHolder++];
@@ -63,7 +63,9 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
       Rcout << transData[col1][18] << std::endl;
     }*/
   }
+  Rcout << "--" << std::endl;
   
+  Rcout << transData[1][18] << std::endl;
   ItemNode root(rNumItems,-1);
   std::vector<ItemNode> allNodes;
   std::vector<ConditionalTree> trees;
@@ -72,15 +74,32 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
   for(int i = 0; i < totalItemsAboveMinSupport; i++){
     trees.push_back(emptyTree);
   }
-
-  allNodes.push_back(root);
+  for(int i = 0; i < 18 ; i++){
+    Rcout << transData[0][18] << std::endl;
+  }
   for(int transID = 0; transID < rNumTrans; transID++){
-    int lastNodeLocation = 0;
+    // put this in a function 
+    int correctTreeIndex = -1;
+    for(int i = totalItemsAboveMinSupport-1; i >= 0; i--){
+      if(transData[transID][freq[1][i]]){
+        correctTreeIndex = i;
+        break;
+      }
+    }
+    if(correctTreeIndex == -1){
+      break;
+    }
+    //end would be function
     RuleNode currentRule;
+    
+    trees.at(correctTreeIndex).reset();
     for(int itemIterator = 0; itemIterator < rNumItems; itemIterator++){
       int itemID = freq[1][itemIterator];
       
       if(transData[transID][itemID]) {
+       trees.at(correctTreeIndex).add(itemID,rNumItems,currentRule);
+        currentRule.add(itemID);
+        /*
         if(allNodes.at(lastNodeLocation).itemAlreadyInModel(itemID)) {
           lastNodeLocation = allNodes.at(lastNodeLocation).findNextNodeIndex(itemID);
           allNodes.at(lastNodeLocation).increment();
@@ -92,8 +111,8 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
           allNodes.push_back(newNode);
           allNodes.at(lastNodeLocation).prevItems = currentRule.items;
           
-        }
-        currentRule.add(itemID); // put before the .itemalreadyinmodel if statement if you want to include the new rule to include the current item.
+        }*/
+      // not sure if needed  currentRule.add(itemID); // put before the .itemalreadyinmodel if statement if you want to include the new rule to include the current item.
         
       }
     }

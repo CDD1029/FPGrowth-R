@@ -1,3 +1,5 @@
+#ifndef RULENODE
+#define RULENODE
 #include <vector>
 #include <iostream>
 class RuleNode {
@@ -13,3 +15,4 @@ public:
   }
   
 };
+#endif
