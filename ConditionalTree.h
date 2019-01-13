@@ -5,6 +5,7 @@
 class ConditionalTree {
 private:
   int lastNodeLocation;
+  int endingID;
 public:
   std::vector<ItemNode> items;
   
@@ -22,8 +23,11 @@ public:
       
     }
   }
-  ConditionalTree(ItemNode root){
+  ConditionalTree(int rNumItems, int ending_id){
+    ItemNode root(rNumItems,-1);
     items.push_back(root);
+    
+    endingID = ending_id;
   }
   void reset(){
     lastNodeLocation = 0;

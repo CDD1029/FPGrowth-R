@@ -66,14 +66,13 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
   Rcout << "--" << std::endl;
   
   Rcout << transData[1][18] << std::endl;
-  ItemNode root(rNumItems,-1);
   std::vector<ItemNode> allNodes;
   std::vector<ConditionalTree> trees;
-  ConditionalTree emptyTree(root);
-  
-  for(int i = 0; i < totalItemsAboveMinSupport; i++){
-    trees.push_back(emptyTree);
+  for(int i = totalItemsAboveMinSupport-1; i >= 0; i--){
+    ConditionalTree emptyTreeWithItemItIsSupposedToEndIn(rNumItems,freq[1][i]);
+    trees.push_back(emptyTreeWithItemItIsSupposedToEndIn);
   }
+
   for(int i = 0; i < 18 ; i++){
     Rcout << transData[0][18] << std::endl;
   }
