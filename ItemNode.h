@@ -11,7 +11,7 @@ private:
     boolNextItem.at(itemID) = true;
   }
 public:
-  std::vector<int> prevItems;
+  std::vector<bool> prevItems;
   int nodeCount;
   int nodeValue;
   ItemNode(int size, int val){

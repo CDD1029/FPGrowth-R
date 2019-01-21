@@ -6,13 +6,15 @@ class RuleNode {
 private:
   int value;
 public:
-  std::vector<int> items;
-  void add(int item) {
-    items.push_back(item);
+  std::vector<bool> items;
+  void add(int index) {
+    items.at(index) = true;
   }
   void setValue(int val){
     value = val;
   }
-  
+  RuleNode(int totItems){
+    items.push_back(false);
+  }
 };
 #endif

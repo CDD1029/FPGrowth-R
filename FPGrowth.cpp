@@ -21,7 +21,7 @@ using namespace Rcpp;
 double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTransData,CharacterVector rItems, int minSupport) {
   int freq[2][rNumItems];
   int placeHolder = 0;
-  
+  std::vector<int> frequentItemIDs; // head = most freq, end is least freq
   for(int col1 = 0; col1 < 2; col1++){
     
     for(int col2 = 0; col2 < rNumItems; col2++){
@@ -43,7 +43,12 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
     if (rFreq[i] > minSupport) {
       lastItemIsAboveMinSupport = i;
       totalItemsAboveMinSupport++;
+      
+      frequentItemIDs.push_back(rFreq[i+rNumItems]);
+      
       //this might be redundant, if ordered these values should be equal
+    }
+    else{
     }
   }
   for(int i = totalItemsAboveMinSupport-1; i >= 0; i--){
@@ -63,19 +68,14 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
       Rcout << transData[col1][18] << std::endl;
     }*/
   }
-  Rcout << "--" << std::endl;
-  
-  Rcout << transData[1][18] << std::endl;
+
   std::vector<ItemNode> allNodes;
   std::vector<ConditionalTree> trees;
   for(int i = totalItemsAboveMinSupport-1; i >= 0; i--){
-    ConditionalTree emptyTreeWithItemItIsSupposedToEndIn(rNumItems,freq[1][i]);
+    ConditionalTree emptyTreeWithItemItIsSupposedToEndIn(rNumItems,frequentItemIDs.at(i));
     trees.push_back(emptyTreeWithItemItIsSupposedToEndIn);
   }
 
-  for(int i = 0; i < 18 ; i++){
-    Rcout << transData[0][18] << std::endl;
-  }
   for(int transID = 0; transID < rNumTrans; transID++){
     // put this in a function 
     int correctTreeIndex = -1;
@@ -89,7 +89,7 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
       break;
     }
     //end would be function
-    RuleNode currentRule;
+    RuleNode currentRule(totalItemsAboveMinSupport);
     
     trees.at(correctTreeIndex).reset();
     for(int itemIterator = 0; itemIterator < rNumItems; itemIterator++){
@@ -97,7 +97,7 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
       
       if(transData[transID][itemID]) {
        trees.at(correctTreeIndex).add(itemID,rNumItems,currentRule);
-        currentRule.add(itemID);
+        currentRule.add(itemIterator);
         /*
         if(allNodes.at(lastNodeLocation).itemAlreadyInModel(itemID)) {
           lastNodeLocation = allNodes.at(lastNodeLocation).findNextNodeIndex(itemID);
@@ -116,6 +116,9 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
       }
     }
   }
+  for(int i = 0; i < trees.size();i++){
+    trees.at(i).removeBelowSupport(minSupport,trees.size()-i-1);//-1 because I don't need to redo math for the last item. 
+  }
   int zero = 0;
   for(int nodeIterator = 0; nodeIterator < allNodes.size();nodeIterator++){
     if(allNodes.at(nodeIterator).prevItems.size() == 0){
@@ -125,7 +128,7 @@ double uhh(NumericVector rFreq,int rNumItems, int rNumTrans, LogicalVector rTran
   //   Rcout << allNodes.at(nodeIterator).prevItems.at(0) << std::endl;
   }
   
-  Rcout << zero << std::endl;
+ // Rcout << zero << std::endl;
   return 222.0;
 }
 
